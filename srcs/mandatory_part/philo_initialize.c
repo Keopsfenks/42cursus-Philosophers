@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   list_functions.c                                   :+:      :+:    :+:   */
+/*   philo_initialize.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/05 23:23:25 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/06 02:42:28 by segurbuz         ###   ########.fr       */
+/*   Updated: 2023/11/06 15:25:05 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,14 +21,11 @@ t_philo	*philo_create(int type, t_data *data)
 	if (!philo)
 		return (NULL);
 	philo->id = type + 1;
-	philo->eat_count = 0;
 	philo->last_eat = get_tick_count();
 	philo->meal_count = 0;
 	philo->data = data;
 	philo->dead_check = false;
 	pthread_mutex_init(philo->fork, NULL);
-	pthread_create(&philo->thread, NULL, &philo_routine, philo);
-	pthread_detach(philo->thread);
 	philo->next = NULL;
 	philo->prev = NULL;
 	return (philo);
@@ -60,15 +57,29 @@ t_philo	*ms_lstlast(t_philo *lst)
 	return (lst);
 }
 
-int	ms_lstsize(t_philo *lst)
+void	start(t_philo *philo)
 {
 	int	i;
 
-	i = 0;
-	while (lst != NULL)
+	i = -1;
+	while (++i < philo->data->total_philos)
 	{
-		i++;
-		lst = lst->next;
+		pthread_create(&philo->thread, NULL, &philo_routine, philo);
+		pthread_detach(philo->thread);
+		philo = philo->next;	
 	}
-	return (i);
+}
+
+void	philo_initialize(t_data *data, t_philo **philo)
+{
+	int		i;
+	t_philo	*last;
+
+	i = -1;
+	while (++i < data->total_philos)
+		philo_add(&(*philo), philo_create(i, data));
+	last = ms_lstlast(*philo);
+	last->next = (*philo);
+	(*philo)->prev = last;
+	start(*philo);
 }

@@ -6,24 +6,11 @@
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/05 22:02:09 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/06 03:22:05 by segurbuz         ###   ########.fr       */
+/*   Updated: 2023/11/06 16:13:15 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
-
-void	philo_initialize(t_data *data, t_philo **philo)
-{
-	int		i;
-	t_philo	*last;
-
-	i = -1;
-	while (++i < data->total_philos)
-		philo_add(&(*philo), philo_create(i, data));
-	last = ms_lstlast(*philo);
-	last->next = (*philo);
-	(*philo)->prev = last;
-}
 
 void	data_initialize(t_data *data, int ac, char **av)
 {
@@ -52,7 +39,17 @@ int	main(int ac, char **av)
 	if (ac > 4 && ac < 7)
 	{
 		data_initialize(data, ac, av);
-		while (1);
+		while (1)
+		{
+			if (dead_check(data->philo))
+				break ;
+			if (data->must_eat == -2)
+			{
+				printf("There's no food left in the pot. \n");
+				break ;
+			}
+			usleep(500);
+		}
 	}
 	else
 		ft_error("You gave incomplete or too many arguments!");
