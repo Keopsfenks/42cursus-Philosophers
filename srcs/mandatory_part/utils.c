@@ -6,7 +6,7 @@
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/05 22:09:32 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/06 15:50:45 by segurbuz         ###   ########.fr       */
+/*   Updated: 2023/11/07 01:34:40 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,13 +30,12 @@ int	ft_atoi(char *str)
 	while ((str[i] >= 9 && str[i] <= 13) || (str[i] == 32))
 		i++;
 	if (str[i] == '-' || str[i] == '+')
-		if (str[i++] == '-')
-			ft_error("The argument you enter cannot be a negative number");
+		ft_error("The argument you enter cannot be a negative number");
 	while (str[i] >= '0' && str[i] <= '9' && str[i])
 	{
 		result = result * 10 + (str[i] - 48) * sign;
-		// if (result > 200)
-		// 	ft_error("You gave argument overcome limit!");
+		if (result > 2147483647 || result < -2147483648)
+			ft_error("You gave argument overcome limit!");
 		i++;
 	}
 	if (str[i] == '-' || str[i] == '+')
@@ -62,21 +61,27 @@ void	time_machine(t_philo *philo, long long pass_time)
 		usleep(100);
 }
 
-bool	dead_check(t_philo *philo)
+void	*dead_check(void *data)
 {
-	pthread_mutex_lock(&philo->data->dead);
+	t_philo	*philo;
+
+	philo = (t_philo *)data;
 	while (1)
 	{
-		if (philo->dead_check == true)
+		pthread_mutex_lock(&philo->data->dead);
+		pthread_mutex_lock(&philo->data->eat);
+		if (get_tick_count() > philo->last_eat + philo->data->t_to_die)
 		{
-			printf("%lld  %d died \n", \
-				get_tick_count() - philo->data->time, philo->id);
-			return (true);
-		}
-		if (philo->id == philo->data->total_philos)
+			philo->dead_check = true;
+			if (philo->data->must_eat == -1)
+				philo->data->dead_check = true;
+			pthread_mutex_unlock(&philo->data->dead);
+			pthread_mutex_unlock(&philo->data->eat);
 			break ;
-		philo = philo->next;
+		}
+		pthread_mutex_unlock(&philo->data->dead);
+		pthread_mutex_unlock(&philo->data->eat);
+		usleep(1000);
 	}
-	pthread_mutex_unlock(&philo->data->dead);
-	return (false);
+	return (NULL);
 }

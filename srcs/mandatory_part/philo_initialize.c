@@ -6,7 +6,7 @@
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/05 23:23:25 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/06 15:25:05 by segurbuz         ###   ########.fr       */
+/*   Updated: 2023/11/07 01:33:09 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ void	start(t_philo *philo)
 	{
 		pthread_create(&philo->thread, NULL, &philo_routine, philo);
 		pthread_detach(philo->thread);
-		philo = philo->next;	
+		philo = philo->next;
 	}
 }
 

@@ -6,11 +6,21 @@
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/06 04:13:21 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/06 15:45:07 by segurbuz         ###   ########.fr       */
+/*   Updated: 2023/11/07 01:33:27 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../includes/philosophers.h"
+
+void	one_philo(t_philo *philo)
+{
+	if (philo->data->total_philos == 1)
+	{
+		time_machine(philo, philo->data->t_to_die);
+		philo->dead_check = true;
+		philo->data->dead_check = true;
+	}
+}
 
 void	take_forks(t_philo *philo)
 {
@@ -19,6 +29,7 @@ void	take_forks(t_philo *philo)
 	printf ("%lld  %d has taken a fork \n", \
 		get_tick_count() - philo->data->time, philo->id);
 	pthread_mutex_unlock(&philo->data->talk);
+	one_philo(philo);
 	pthread_mutex_lock(philo->fork);
 	pthread_mutex_lock(&philo->data->talk);
 	printf ("%lld  %d has taken a fork \n", \
@@ -48,9 +59,7 @@ void	philo_sleeping(t_philo *philo)
 	printf("%lld  %d is sleeping\n",
 		get_tick_count() - philo->data->time, philo->id);
 	pthread_mutex_unlock(&philo->data->talk);
-	pthread_mutex_lock(&philo->data->sleep);
 	time_machine(philo, philo->data->t_to_sleep);
-	pthread_mutex_unlock(&philo->data->sleep);
 }
 
 void	philo_thinking(t_philo *philo)

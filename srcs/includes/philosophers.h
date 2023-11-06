@@ -6,7 +6,7 @@
 /*   By: segurbuz <segurbuz@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/05 20:43:12 by segurbuz          #+#    #+#             */
-/*   Updated: 2023/11/06 15:49:57 by segurbuz         ###   ########.fr       */
+/*   Updated: 2023/11/07 01:28:54 by segurbuz         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,6 @@ typedef struct s_data
 	t_philo			*philo;
 	bool			dead_check;
 	pthread_mutex_t	dead;
-	pthread_mutex_t	sleep;
 	pthread_mutex_t	eat;
 	pthread_mutex_t	talk;
 }					t_data;
@@ -62,4 +61,4 @@ void			time_machine(t_philo *philo, long long pass_time);
 void			philo_eating(t_philo *philo);
 void			philo_sleeping(t_philo *philo);
 void			philo_thinking(t_philo *philo);
-bool			dead_check(t_philo *philo);
+void			*dead_check(void *data);
